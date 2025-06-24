@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User (Admin Only)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f3f6;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0277bd;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Certificate Details</h2>
+        <form method="POST" action="/add">
+            <label for="password">Admin Password:</label>
+            <input type="password" name="password" required>
+
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+
+            <label for="event">Event:</label>
+            <input type="text" name="event" required>
+
+            <label for="application_no">Application No.:</label>
+            <input type="text" name="application_no" required>
+
+            <label for="submit_date">Submit Date (dd/mm/yyyy):</label>
+            <input type="text" name="submit_date" required>
+
+            <label for="event_date">Event Date (dd/mm/yyyy):</label>
+            <input type="text" name="event_date" required>
+
+            <label for="status">Status:</label>
+            <input type="text" name="status" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
