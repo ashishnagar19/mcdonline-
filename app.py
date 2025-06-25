@@ -1,71 +1,85 @@
-from flask import Flask, render_template, request, redirect, url_for, abort
-import json, os, uuid
+from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+import os, uuid
 
 app = Flask(__name__)
 
-DATA_FILE = 'data.json'
-ADMIN_PASSWORD = 'kashikabajpai'  # Change this!
+# Configuration for SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///users.db")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+ADMIN_PASSWORD = 'kashikabajpai'  # Change this to a secure password
 
-# Load & Save Data
-def load_data():
-    if not os.path.exists(DATA_FILE) or os.stat(DATA_FILE).st_size == 0:
-        return {}
-    with open(DATA_FILE, 'r') as f:
-        return json.load(f)
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
 
-def save_data(data):
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=4)
+# User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    event = db.Column(db.String(100))
+    application_no = db.Column(db.String(50), unique=True, nullable=False)
+    submit_date = db.Column(db.String(50))
+    event_date = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    unique_id = db.Column(db.String(100), unique=True)
 
-# Routes
+# Ensure database tables are created safely
+with app.app_context():
+    db.create_all()
+
+# Home route to render add user form
 @app.route('/')
 def index():
     return render_template('add_user.html')
 
+# Add user route
 @app.route('/add', methods=['POST'])
 def add_user():
     # Password check
-    admin_pass = request.form['password']
+    admin_pass = request.form.get('password')
     if admin_pass != ADMIN_PASSWORD:
         return "Unauthorized: Incorrect admin password", 401
 
     # Extract form data
-    name = request.form['name']
-    event = request.form['event']
-    application_no = request.form['application_no']
-    submit_date = request.form['submit_date']
-    event_date = request.form['event_date']
-    status = request.form['status']
+    name = request.form.get('name')
+    event = request.form.get('event')
+    application_no = request.form.get('application_no')
+    submit_date = request.form.get('submit_date')
+    event_date = request.form.get('event_date')
+    status = request.form.get('status')
 
-    # Load and check uniqueness of application_no
-    data = load_data()
-    for user in data.values():
-        if user['application_no'] == application_no:
-            return "Application No. already exists!", 400
+    # Check for existing application number
+    if User.query.filter_by(application_no=application_no).first():
+        return "Application No. already exists!", 400
 
-    # Generate unique user ID (UUID)
-    user_id = str(uuid.uuid4())[:8]  # Short UUID
+    # Generate unique user ID
+    unique_id = str(uuid.uuid4())[:8]
 
-    # Save data
-    data[user_id] = {
-        'name': name,
-        'event': event,
-        'application_no': application_no,
-        'submit_date': submit_date,
-        'event_date': event_date,
-        'status': status
-    }
-    save_data(data)
+    # Create new user
+    new_user = User(
+        name=name,
+        event=event,
+        application_no=application_no,
+        submit_date=submit_date,
+        event_date=event_date,
+        status=status,
+        unique_id=unique_id
+    )
 
-    return redirect(url_for('show_user', user_id=user_id))
+    # Add and commit to database
+    db.session.add(new_user)
+    db.session.commit()
 
+    return redirect(url_for('show_user', user_id=unique_id))
+
+# Display user details
 @app.route('/user/<user_id>')
 def show_user(user_id):
-    data = load_data()
-    user = data.get(user_id)
+    user = User.query.filter_by(unique_id=user_id).first()
     if not user:
         return "User not found", 404
     return render_template('user.html', user=user)
 
+# Run app
 if __name__ == '__main__':
     app.run(debug=True)

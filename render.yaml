@@ -2,6 +2,7 @@ services:
   - type: web
     name: user-cert-app
     env: python
-    buildCommand: ""
-    startCommand: gunicorn app:app
     plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    autoDeploy: true

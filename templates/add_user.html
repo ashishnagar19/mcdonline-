@@ -3,46 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Add User (Admin Only)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f3f6;
             padding: 20px;
+            margin: 0;
         }
 
         .form-container {
-            max-width: 500px;
-            margin: auto;
+            max-width: 600px;
+            margin: 20px auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #0288d1;
         }
 
         label {
             display: block;
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
+            color: #333;
         }
 
         input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
+            width: 100%;
             margin-top: 20px;
-            padding: 10px 15px;
+            padding: 12px;
             background-color: #0288d1;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
         }
 
         button:hover {
             background-color: #0277bd;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 15px;
+            }
         }
     </style>
 </head>
